@@ -47,7 +47,8 @@ async def syriatelW(c: CallbackQuery, state: FSMContext):
     
     await c.message.edit_text(
         text="📱 *سحب عبر سيرياتيل كاش*\n\n"
-             "⚠️ *تنبيه:* عمولة السحب هي 10% خصم من المبلغ المسحوب.\n\n"
+             "⚠️ *تنبيه:* عمولة السحب هي 10% خصم من المبلغ المسحوب.\n"
+             "📌 *الحد الأدنى للسحب:* 50,000 ل.س\n\n"
              "يرجى إرسال رقم الهاتف الذي ترغب باستقبال الرصيد عليه في المحادثة مباشرة.",
         parse_mode="Markdown",
         reply_markup=back_kb
@@ -73,10 +74,11 @@ async def process_number_syriatel(m: types.Message, state: FSMContext):
 async def process_amount_syriatel(m: types.Message, state: FSMContext):
     try:
         amount = int(m.text.strip())
-        if amount <= 0:
-            raise ValueError
+        if amount < 50000:
+            await m.answer("❌ عذراً، أقل قيمة يمكنك سحبها هي 50,000 ل.س.\nيرجى إرسال مبلغ يساوي الحد الأدنى أو أكبر:")
+            return
     except ValueError:
-        await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط وأكبر من صفر)")
+        await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط)")
         return
 
     await state.update_data(amount=amount)
@@ -87,7 +89,7 @@ async def process_amount_syriatel(m: types.Message, state: FSMContext):
     fee = int(amount * 0.10)
     net_amount = amount - fee
 
-    # إنشاء أزرار المواقع والإلغاء للمستخدم
+    # إنشاء أزرار الموافقة والإلغاء للمستخدم
     confirm_kb = InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(text="✅ موافق وإرسال الطلب", callback_data="confirm_withdraw_sy"),
@@ -143,20 +145,20 @@ async def send_syriatel_withdraw_to_admin(call: CallbackQuery, state: FSMContext
         await call.bot.send_message(
             GROUP_ID,
             f"📤 طلب سحب جديد (سيرياتيل كاش)\n\n"
-            f"👤 ID المستخدم: {uid}\n"
-            f"🧾 رقم الهاتف للتحويل: {process}\n"
+            f"👤 ID المستخدم: <code>{uid}</code>\n"
+            f"🧾 رقم الهاتف للتحويل (اضغط للنسخ): <code>{process}</code>\n\n"
             f"💰 المبلغ المطلوب سحبه: {amount:,} ل.س\n"
             f"✂️ عمولة الخصم (10%): {fee:,} ل.س\n"
-            f"💵 المبلغ الصافي المراد تحويله: {net_amount:,} ل.س",
+            f"💵 <b>المبلغ الصافي المراد تحويله:</b> <b>{net_amount:,} ل.س</b>",
             reply_markup=kb,
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
     except Exception as e:
         print(f"فشل إرسال إشعار سحب سيرياتيل للجروب: {e}")
         
     await state.clear()
 
-# ========================= قبول ورفض سيرياتيل (كما هي بدون تغيير) =========================
+# ========================= قبول ورفض سيرياتيل =========================
 @router.callback_query(F.data.startswith("acceptW_S_"))
 async def accept_syriatel_withdraw(call: types.CallbackQuery):
     uid = int(call.data.split("_")[2])
@@ -195,7 +197,8 @@ async def shamcashW(c: CallbackQuery, state: FSMContext):
     
     await c.message.edit_text(
         text="💳 *سحب عبر شام كاش*\n\n"
-             "⚠️ *تنبيه:* عمولة السحب هي 12% خصم من المبلغ المسحوب.\n\n"
+             "⚠️ *تنبيه:* عمولة السحب هي 10% خصم من المبلغ المسحوب.\n"
+             "📌 *الحد الأدنى للسحب:* 50,000 ل.س\n\n"
              "📲 لاستلام أرباحك، يرجى إرسال رابط الاستقبال الخاص بك.\n"
              "_(يمكنك الحصول عليه من تطبيق شام كاش 👈 زر الاستقبال)_\n\n"
              "👑 *تنبيه هام:* يرجى عدم إرفاق صورة باركود (QR)، فقط أرسل الرابط كنص.\n\n"
@@ -219,10 +222,11 @@ async def process_number_shamcash(m: types.Message, state: FSMContext):
 async def process_amount_shamcash(m: types.Message, state: FSMContext):
     try:
         amount = int(m.text.strip())
-        if amount <= 0:
-            raise ValueError
+        if amount < 50000:
+            await m.answer("❌ عذراً، أقل قيمة يمكنك سحبها هي 50,000 ل.س.\nيرجى إرسال مبلغ يساوي الحد الأدنى أو أكبر:")
+            return
     except ValueError:
-        await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط وأكبر من صفر)")
+        await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط)")
         return
 
     await state.update_data(amount=amount)
@@ -230,7 +234,7 @@ async def process_amount_shamcash(m: types.Message, state: FSMContext):
     process = data.get("process")
 
     # حساب الحسم والمبلغ الصافي للشام كاش
-    fee = int(amount * 0.12)
+    fee = int(amount * 0.10)
     net_amount = amount - fee
 
     confirm_kb = InlineKeyboardMarkup(inline_keyboard=[
@@ -244,7 +248,7 @@ async def process_amount_shamcash(m: types.Message, state: FSMContext):
         f"📝 *تفاصيل طلب السحب الخاص بك (شام كاش):*\n\n"
         f"🔗 *رابط الاستقبال:* {process}\n"
         f"💰 *المبلغ المطلوب:* {amount:,} ل.س\n"
-        f"✂️ *عمولة الخصم (12%):* {fee:,} ل.س\n"
+        f"✂️ *عمولة الخصم (10%):* {fee:,} ل.س\n"
         f"💵 *المبلغ الصافي الذي سيصلك:* *{net_amount:,} ل.س*\n\n"
         f"اضغط على زر موافق أدناه لتأكيد حجز الرصيد وإرسال الطلب للإدارة.",
         parse_mode="Markdown",
@@ -273,7 +277,7 @@ async def send_shamcash_withdraw_to_admin(call: CallbackQuery, state: FSMContext
         await state.clear()
         return
 
-    fee = int(amount * 0.12)
+    fee = int(amount * 0.10)
     net_amount = amount - fee
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
@@ -282,17 +286,18 @@ async def send_shamcash_withdraw_to_admin(call: CallbackQuery, state: FSMContext
             InlineKeyboardButton(text="❌ رفض", callback_data=f"rejectW_SH_{uid}")
         ]
     ])
-
     await call.message.edit_text("⏳ تم تأكيد حجز الرصيد بنجاح، وجاري مراجعة طلبك من قبل الإدارة.")
+    
     try:
+        # هنا تم إضافة وسم <code> ليكون الرابط والـ ID قابلين للنسخ المباشر بضغطة واحدة
         await call.bot.send_message(
             GROUP_ID,
-            f"📤 طلب سحب جديد (شام كاش)\n\n"
-            f"👤 ID المستخدم: {uid}\n"
-            f"🔗 رابط الاستقبال: <code>{process}</code>\n"
+            f"📤 <b>طلب سحب جديد (شام كاش)</b>\n\n"
+            f"👤 ID المستخدم: <code>{uid}</code>\n"
+            f"🔗 رابط الاستقبال (اضغط للنسخ):\n<code>{process}</code>\n\n"
             f"💰 المبلغ المطلوب سحبه: {amount:,} ل.س\n"
-            f"✂️ عمولة الخصم (12%): {fee:,} ل.س\n"
-            f"💵 المبلغ الصافي المراد تحويله: {net_amount:,} ل.س",
+            f"✂️ عمولة الخصم (10%): {fee:,} ل.س\n"
+            f"💵 <b>المبلغ الصافي المراد تحويله:</b> <b>{net_amount:,} ل.س</b>",
             reply_markup=kb,
             parse_mode="HTML"
         )
@@ -301,7 +306,7 @@ async def send_shamcash_withdraw_to_admin(call: CallbackQuery, state: FSMContext
         
     await state.clear()
 
-# ========================= قبول ورفض شام كاش (كما هي بدون تغيير) =========================
+# ========================= قبول ورفض شام كاش =========================
 @router.callback_query(F.data.startswith("acceptW_SH_"))
 async def accept_shamcash(call: types.CallbackQuery):
     uid = int(call.data.split("_")[2])
