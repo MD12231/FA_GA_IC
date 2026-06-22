@@ -100,6 +100,11 @@ async def process_amount_syriatelCash(m: types.Message, state: FSMContext):
 
     try:
         amount = int(m.text.strip())
+        
+        if amount < 20000:
+            await m.answer("❌ عذراً، أقل قيمة يمكنك شحنها هي 20,000 ل.س.\nيرجى إرسال مبلغ يساوي الحد الأدنى أو أكبر:")
+            return
+            
     except ValueError:
         await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط)")
         return
@@ -262,6 +267,11 @@ async def process_amount_shamcash(m: types.Message, state: FSMContext):
 
     try:
         amount = int(m.text.strip())
+
+        if amount < 20000:
+            await m.answer("❌ عذراً، أقل قيمة يمكنك شحنها هي 20,000 ل.س.\nيرجى إرسال مبلغ يساوي الحد الأدنى أو أكبر:")
+            return
+            
     except ValueError:
         await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط)")
         return
