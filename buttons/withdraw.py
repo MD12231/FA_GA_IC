@@ -63,6 +63,7 @@ async def process_number_syriatel(m: types.Message, state: FSMContext):
     tx = m.text.strip()
     if not tx.isdigit():
         await m.answer("❌ أدخل رقم هاتف صحيح (أرقام فقط)")
+        await state.clear()
         return
         
     await state.update_data(process=tx)
@@ -76,9 +77,12 @@ async def process_amount_syriatel(m: types.Message, state: FSMContext):
         amount = int(m.text.strip())
         if amount < 50000:
             await m.answer("❌ عذراً، أقل قيمة يمكنك سحبها هي 50,000 ل.س.\nيرجى إرسال مبلغ يساوي الحد الأدنى أو أكبر:")
+            await state.clear()
             return
+            
     except ValueError:
         await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط)")
+        await state.clear()
         return
 
     await state.update_data(amount=amount)
@@ -224,9 +228,11 @@ async def process_amount_shamcash(m: types.Message, state: FSMContext):
         amount = int(m.text.strip())
         if amount < 50000:
             await m.answer("❌ عذراً، أقل قيمة يمكنك سحبها هي 50,000 ل.س.\nيرجى إرسال مبلغ يساوي الحد الأدنى أو أكبر:")
+            await state.clear()
             return
     except ValueError:
         await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط)")
+        await state.clear()
         return
 
     await state.update_data(amount=amount)
