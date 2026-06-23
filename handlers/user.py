@@ -152,7 +152,15 @@ async def process_check_balance(c: CallbackQuery):
     )
 
 
+@router.message(Command("cancel"))
+async def cancel_handler(message: Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        await message.answer("لا توجد عملية نشطة لإلغائها حالياً.")
+        return
 
+    await state.clear() # مسح الحالة الحالية وإلغاء انتظار المبلغ
+    await message.answer("تم إلغاء العملية الحالية بنجاح والتراجع.")
 
 
 @router.callback_query(lambda c: c.data == "menu_ichancy")
