@@ -496,7 +496,7 @@ async def process_broadcast(m: types.Message, state: FSMContext):
     )
 
 @router.message(lambda m: m.text == "تعديل اكواد سيرياتيل كاش")
-async def start_edit_bonus(m: types.Message, state: FSMContext):
+async def start_edit_sy(m: types.Message, state: FSMContext):
     # التحقق من صلاحية الأدمن
     if m.from_user.id not in ADMIN_ID:
         return
@@ -516,7 +516,7 @@ async def start_edit_bonus(m: types.Message, state: FSMContext):
 
 # ========================= حفظ النص الجديد =========================
 @router.message(sy_code_state.waiting_for_sy_text)
-async def save_bonus_text(m: types.Message, state: FSMContext):
+async def save_sy_text(m: types.Message, state: FSMContext):
     if m.from_user.id not in ADMIN_ID:
         return
 
@@ -541,7 +541,7 @@ async def save_bonus_text(m: types.Message, state: FSMContext):
 
 
 @router.message(lambda m: m.text == "تعديل اكواد شام كاش")
-async def start_edit_bonus(m: types.Message, state: FSMContext):
+async def start_edit_sh(m: types.Message, state: FSMContext):
     # التحقق من صلاحية الأدمن
     if m.from_user.id not in ADMIN_ID:
         return
@@ -561,7 +561,7 @@ async def start_edit_bonus(m: types.Message, state: FSMContext):
 
 # ========================= حفظ النص الجديد =========================
 @router.message(sh_code_state.waiting_for_sh_text)
-async def save_bonus_text(m: types.Message, state: FSMContext):
+async def save_sh_text(m: types.Message, state: FSMContext):
     if m.from_user.id not in ADMIN_ID:
         return
 
