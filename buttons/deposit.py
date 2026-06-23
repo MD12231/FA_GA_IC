@@ -11,7 +11,9 @@ from database.db import (
     get_deposit_bonus_rate,
     check_and_add_pending_deposit,
     fetch_and_delete_pending,
-    delete_pending_only
+    delete_pending_only,
+    get_sy_code_from_db,
+    get_sh_code_from_db
 )
 
 from config import GROUP_ID
@@ -64,13 +66,13 @@ async def syriatelcashD(c: CallbackQuery, state: FSMContext):
     ])
     
     # تحديث الرسالة الحالية بعرض الأرقام وتوجيه المستخدم
+    current_text = await get_sy_code_from_db()
+    
+    # تحديث الرسالة الحالية بعرض الأرقام وتوجيه المستخدم
     await c.message.edit_text(
         text="📱 *شحن عبر سيرياتيل كاش*\n\n"
              "يرجى تحويل المبلغ المطلوب إلى أحد الأرقام المتاحة أدناه:\n\n"
-             "📞 *الأرقام المتاحة (اضغط على الرقم لنسخه):*\n"
-             "1️⃣ 0911095128\n"
-             "2️⃣ _جاري تحديث الرقم..._\n"
-             "3️⃣ _جاري تحديث الرقم..._\n\n"
+             f"📞 *الأرقام المتاحة (اضغط على الرقم لنسخه):*\n {current_text}"
              "🧾 *بعد إتمام التحويل:* يرجى كتابة وإرسال رقم العملية هنا في المحادثة مباشرة.",
         parse_mode="Markdown",
         reply_markup=back_kb
@@ -234,13 +236,15 @@ async def shamcashD(c: CallbackQuery, state: FSMContext):
         [InlineKeyboardButton(text="❌ إلغاء والعودة للقائمة", callback_data="back_to_main")]
     ])
    
+    current_text = await get_sh_code_from_db()
+    
     await c.message.edit_text(
         text="💳 *شحن عبر شام كاش*\n\n"
              "يرجى تحويل المبلغ المطلوب إلى العنوان أدناه:\n\n"
-             "📍 *العنوان:* \nTXXXXXXXXXXXXXXXXX\n\n"
+             f"📍 *العنوان:* \n<code>{current_text}</code>\n\n"
              "⚠️ *تنبيه هام:* من فضلك لا تقم بإخفاء هوية حساب شام كاش الذي تقوم بالشحن منه.\n\n"
              "🧾 *بعد التحويل:* يرجى إرسال رقم العملية هنا في المحادثة.",
-        parse_mode="Markdown",
+        parse_mode="HTML",
         reply_markup=back_kb
     )
     
