@@ -76,7 +76,7 @@ class SubscriptionMiddleware(BaseMiddleware):
         user_id = event.from_user.id
         if not await is_subscribed(user_id, event.bot):
             await event.answer(
-                f"❌ يجب الاشتراك بالقناة أولاً:\nhttps://t.me/FalconGalaxyIchancy"
+                f"❌ يجب الاشتراك بالقناة أولاً:\nhttps://t.me/FALCON_GALAXY184242"
             )
             return
         return await handler(event, data)
