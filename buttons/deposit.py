@@ -88,6 +88,7 @@ async def process_number_syriatelcach(m: types.Message, state: FSMContext):
     tx_text = m.text.strip()
     if not tx_text:
         await m.answer("❌ يرجى إرسال رقم عملية صحيح")
+        await state.clear()
         return
         
     await state.update_data(process=tx_text)
@@ -105,10 +106,12 @@ async def process_amount_syriatelCash(m: types.Message, state: FSMContext):
         
         if amount < 20000:
             await m.answer("❌ عذراً، أقل قيمة يمكنك شحنها هي 20,000 ل.س.\nيرجى إرسال مبلغ يساوي الحد الأدنى أو أكبر:")
+            await state.clear()
             return
             
     except ValueError:
         await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط)")
+        await state.clear()
         return
 
     uid = m.from_user.id
@@ -257,6 +260,7 @@ async def process_number_shamcash(m: types.Message, state: FSMContext):
     tx_text = m.text.strip()
     if not tx_text:
         await m.answer("❌ يرجى إرسال رقم عملية صحيح")
+        await state.clear()
         return
      
     await state.update_data(process=tx_text)
@@ -274,10 +278,12 @@ async def process_amount_shamcash(m: types.Message, state: FSMContext):
 
         if amount < 20000:
             await m.answer("❌ عذراً، أقل قيمة يمكنك شحنها هي 20,000 ل.س.\nيرجى إرسال مبلغ يساوي الحد الأدنى أو أكبر:")
+            await state.clear()
             return
             
     except ValueError:
         await m.answer("❌ أرسل مبلغ صحيح (أرقام فقط)")
+        await state.clear()
         return
 
     uid = m.from_user.id
