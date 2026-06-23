@@ -116,6 +116,19 @@ async def init():
             """)
 
             await cur.execute("""
+            INSERT IGNORE INTO bot_settings (`key`, value)
+            VALUES ('sy_code_text', '
+                    1️⃣ 0911095128\n
+                    2️⃣ 0000000000\n
+                    3️⃣ 0000000000\n\n')
+            """)
+
+            await cur.execute("""
+            INSERT IGNORE INTO bot_settings (`key`, value)
+            VALUES ('sh_code_text', '00000000\n')
+            """)
+
+            await cur.execute("""
             CREATE TABLE IF NOT EXISTS bot_tokens (
             id INT PRIMARY KEY DEFAULT 1,
             access_token TEXT NOT NULL,
@@ -828,6 +841,117 @@ async def update_bonus_in_db(new_text: str) -> bool:
                 except:
                     pass
                 return False
+
+
+async def get_sy_code_from_db() -> str:
+    """
+    جلب نص syriatel الحالي من جدول bot_settings بأمان وسرعة.
+    """
+    async with db_pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            try:
+                await conn.begin()
+                await cur.execute("SELECT value FROM bot_settings WHERE `key` = 'sy_code_text'")
+                result = await cur.fetchone()
+                await conn.commit()
+                
+                # التحقق من أن النتيجة ليست فارغة ولها قيمة
+                if result and result[0]:
+                    return str(result[0])
+                return """
+                    1️⃣ 0911095128\n
+                    2️⃣ _جاري تحديث الرقم..._\n
+                    3️⃣ _جاري تحديث الرقم..._\n\n
+                """
+                
+            except Exception as e:
+                print(f"❌ خطأ في دالة get_bonus_from_db: {e}")
+                return """
+                    1️⃣ 0911095128\n
+                    2️⃣ _جاري تحديث الرقم..._\n
+                    3️⃣ _جاري تحديث الرقم..._\n\n
+                """
+            
+async def update_sy_code_in_db(new_text: str) -> bool:
+    """
+    تحديث نص syriatel في جدول bot_settings في معاملة ذرية محمية لمنع تعليق XAMPP.
+    تعيد True في حال النجاح.
+    """
+    async with db_pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            try:
+                # بدء المعاملة لقفل السجل وحمايته أثناء التعديل
+                await conn.begin()
+                
+                # تنفيذ التحديث بناءً على الـ Schema الخاصة بك
+                await cur.execute(
+                    "UPDATE bot_settings SET value = %s WHERE `key` = 'sy_code_text'", 
+                    (new_text,)
+                )
+                
+                # تأكيد الحفظ التلقائي وفك الأقفال فوراً
+                await conn.commit()
+                return True
+                
+            except Exception as e:
+                print(f"❌ خطأ في دالة update_bonus_in_db: {e}")
+                try:
+                    await conn.rollback()  # التراجع في حال حدوث خطأ مفاجئ
+                except:
+                    pass
+                return False
+
+
+async def get_sh_code_from_db() -> str:
+    """
+    جلب نص sham الحالي من جدول bot_settings بأمان وسرعة.
+    """
+    async with db_pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            try:
+                await conn.begin()
+                await cur.execute("SELECT value FROM bot_settings WHERE `key` = 'sh_code_text'")
+                result = await cur.fetchone()
+                await conn.commit()
+                
+                # التحقق من أن النتيجة ليست فارغة ولها قيمة
+                if result and result[0]:
+                    return str(result[0])
+                return "000000000000\n"
+                
+            except Exception as e:
+                print(f"❌ خطأ في دالة get_bonus_from_db: {e}")
+                return "000000000000\n"
+            
+async def update_sh_code_in_db(new_text: str) -> bool:
+    """
+    تحديث نص sham في جدول bot_settings في معاملة ذرية محمية لمنع تعليق XAMPP.
+    تعيد True في حال النجاح.
+    """
+    async with db_pool.acquire() as conn:
+        async with conn.cursor() as cur:
+            try:
+                # بدء المعاملة لقفل السجل وحمايته أثناء التعديل
+                await conn.begin()
+                
+                # تنفيذ التحديث بناءً على الـ Schema الخاصة بك
+                await cur.execute(
+                    "UPDATE bot_settings SET value = %s WHERE `key` = 'sh_code_text'", 
+                    (new_text,)
+                )
+                
+                # تأكيد الحفظ التلقائي وفك الأقفال فوراً
+                await conn.commit()
+                return True
+                
+            except Exception as e:
+                print(f"❌ خطأ في دالة update_sh_in_db: {e}")
+                try:
+                    await conn.rollback()  # التراجع في حال حدوث خطأ مفاجئ
+                except:
+                    pass
+                return False
+
 
 async def get_tokens_from_db():
     """2. دالة جلب التوكنات من قاعدة البيانات عند بدء تشغيل البرنامج"""
