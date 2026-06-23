@@ -91,6 +91,7 @@ adminmenu = ReplyKeyboardMarkup(
         [KeyboardButton(text="تعديل نص البونصات و العروض الحالية")], 
         [KeyboardButton(text="اضافة او حذف البونص")], 
         [KeyboardButton(text="الإذاعة")],
+        [KeyboardButton(text="تعديل اكواد سيرياتيل كاش"),KeyboardButton(text="تعديل اكواد شام كاش")],
         [KeyboardButton(text="القائمة الرئيسية")],
     ],
     resize_keyboard=True, 
