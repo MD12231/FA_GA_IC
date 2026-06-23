@@ -18,7 +18,11 @@ from database.db import (
     get_target_user_transactions_admin,
     distribute_referral_commissions_db,
     update_bonus_in_db,
-    get_all_user_ids
+    get_all_user_ids,
+    get_sy_code_from_db,
+    get_sh_code_from_db,
+    update_sy_code_in_db,
+    update_sh_code_in_db
 )
 
 from aiogram.fsm.context import FSMContext
@@ -40,6 +44,12 @@ class AdminStatess(StatesGroup):
 
 class BroadcastStates(StatesGroup):
     waiting_for_message = State()
+
+class sy_code_state(StatesGroup):
+    waiting_for_sy_text = State()
+
+class sh_code_state(StatesGroup):
+    waiting_for_sh_text = State()
 
 # إنشاء راوتر الأدمن بدلاً من الدالة القديمة القياسية
 router = Router()
@@ -484,3 +494,90 @@ async def process_broadcast(m: types.Message, state: FSMContext):
         f"🟢 تم الإرسال إلى: {success_count}\n"
         f"🔴 فشل الإرسال (حظر البوت): {fail_count}"
     )
+
+@router.message(lambda m: m.text == "تعديل اكواد سيرياتيل كاش")
+async def start_edit_bonus(m: types.Message, state: FSMContext):
+    # التحقق من صلاحية الأدمن
+    if m.from_user.id not in ADMIN_ID:
+        return
+        
+    await state.clear() # تنظيف أي حالات معلقة سابقاً
+    
+    # جلب النص الحالي بأمان بـ سطر واحد
+    current_text = await get_sy_code_from_db()
+    
+    await m.answer(
+        f"📝 <b>النص القديم الحالي في البوت:</b>\n"
+        f"<code>{current_text}</code>\n\n"
+        f"📥 <b>أرسل الآن النص الجديد بالكامل ليتم حفظه وتحديثه للمستخدمين:</b>",
+        parse_mode="HTML"
+    )
+    await state.set_state(sy_code_state.waiting_for_sy_text)
+
+# ========================= حفظ النص الجديد =========================
+@router.message(sy_code_state.waiting_for_sy_text)
+async def save_bonus_text(m: types.Message, state: FSMContext):
+    if m.from_user.id not in ADMIN_ID:
+        return
+
+    new_text = m.text.strip()
+    
+    # تحديث النص داخل قاعدة البيانات بأسلوب آمن وبسطر واحد
+    success = await update_sy_code_in_db(new_text)
+    
+    if success:
+        await m.answer(
+            f"✅ <b>تم تحديث نص سيرياتيل كاش بنجاح!</b>\n\n"
+            f"📋 <b>النص الحالي المعروض للمستخدمين:</b>\n"
+            f"{new_text}",
+            parse_mode="HTML"
+        )
+    else:
+        await m.answer("❌ حدث خطأ داخلي أثناء تحديث النص في قاعدة البيانات، يرجى تفقّد محرك XAMPP.")
+        
+    await state.clear()
+
+
+
+
+@router.message(lambda m: m.text == "تعديل اكواد شام كاش")
+async def start_edit_bonus(m: types.Message, state: FSMContext):
+    # التحقق من صلاحية الأدمن
+    if m.from_user.id not in ADMIN_ID:
+        return
+        
+    await state.clear() # تنظيف أي حالات معلقة سابقاً
+    
+    # جلب النص الحالي بأمان بـ سطر واحد
+    current_text = await get_sh_code_from_db()
+    
+    await m.answer(
+        f"📝 <b>النص القديم الحالي في البوت:</b>\n"
+        f"<code>{current_text}</code>\n\n"
+        f"📥 <b>أرسل الآن النص الجديد بالكامل ليتم حفظه وتحديثه للمستخدمين:</b>",
+        parse_mode="HTML"
+    )
+    await state.set_state(sh_code_state.waiting_for_sh_text)
+
+# ========================= حفظ النص الجديد =========================
+@router.message(sh_code_state.waiting_for_sh_text)
+async def save_bonus_text(m: types.Message, state: FSMContext):
+    if m.from_user.id not in ADMIN_ID:
+        return
+
+    new_text = m.text.strip()
+    
+    # تحديث النص داخل قاعدة البيانات بأسلوب آمن وبسطر واحد
+    success = await update_sh_code_in_db(new_text)
+    
+    if success:
+        await m.answer(
+            f"✅ <b>تم تحديث نص شام كاش بنجاح!</b>\n\n"
+            f"📋 <b>النص الحالي المعروض للمستخدمين:</b>\n"
+            f"{new_text}",
+            parse_mode="HTML"
+        )
+    else:
+        await m.answer("❌ حدث خطأ داخلي أثناء تحديث النص في قاعدة البيانات، يرجى تفقّد محرك XAMPP.")
+        
+    await state.clear()
