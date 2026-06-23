@@ -18,7 +18,8 @@ from handlers import user, admin, referral
 # 🛑 دالة إعداد أزرار القائمة (Menu)
 async def setup_bot_commands(bot: Bot):
     commands = [
-        BotCommand(command="start", description="تشغيل البوت")
+        BotCommand(command="start", description="تشغيل البوت"),
+        BotCommand(command="cancel", description="❌ إلغاء العملية الحالية والعودة")
     ]
     # تعيين الأوامر لجميع المستخدمين بشكل افتراضي
     await bot.set_my_commands(commands=commands, scope=BotCommandScopeDefault())
