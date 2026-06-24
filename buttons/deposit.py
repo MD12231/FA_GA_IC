@@ -74,7 +74,7 @@ async def syriatelcashD(c: CallbackQuery, state: FSMContext):
              "يرجى تحويل المبلغ المطلوب إلى أحد الأرقام المتاحة أدناه:\n\n"
              f"📞 *الأرقام المتاحة (اضغط على الرقم لنسخه):*\n {current_text}"
              "🧾 *بعد إتمام التحويل:* يرجى كتابة وإرسال رقم العملية هنا في المحادثة مباشرة.",
-        parse_mode="Markdown",
+        parse_mode="HTML",
         reply_markup=back_kb
     )
     
